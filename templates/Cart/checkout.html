@@ -1,0 +1,240 @@
+{% extends 'Main/base.html' %}
+{% block content %}
+{% load cart_tag %}
+<!-- checkout area start -->
+<form method="post">
+    {% csrf_token %}
+<div class="checkout-area pt-100px pb-100px">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7">
+                <div class="billing-info-wrap">
+                    <h3>Billing Details</h3>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6">
+                            <div class="billing-info mb-4">
+                                <label>First Name</label>
+                                <input type="text" value="{{user.first_name}}" name="firstname" readonly/>
+                                {% if form.firstName.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.firstName.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="billing-info mb-4">
+                                <label>Last Name</label>
+                                <input type="text" value="{{user.last_name}}" name="lastname" readonly/>
+                                {% if form.lastName.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.lastName.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="billing-info mb-4">
+                                <label>Company Name</label>
+                                <input type="text" />
+                                {% if form.companyName.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.companyName.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="billing-select mb-4">
+                                <label>Country</label>
+                                <select name="country">
+                                    <option>Select a country</option>
+                                    <option>Azerbaijan</option>
+                                    <option>Bahamas</option>
+                                    <option>Bahrain</option>
+                                    <option>Bangladesh</option>
+                                    <option>Barbados</option>
+                                </select>
+                                {% if form.country.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.country.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="billing-info mb-4">
+                                <label>Street Address</label>
+                                {% comment %} TODO fix this you're using same name `address` for two fields here {% endcomment %}
+                                <input class="billing-address" placeholder="House number and street name" type="text" name="address"/>
+                                <input placeholder="Apartment, suite, unit etc." type="text" name="address"/>
+                                {% if form.address.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.address.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="billing-info mb-4">
+                                <label>Town / City</label>
+                                <input type="text" name="city"/>
+                                {% if form.city.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.city.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="billing-info mb-4">
+                                <label>State / County</label>
+                                <input type="text" name="state"/>
+                                {% if form.state.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.state.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="billing-info mb-4">
+                                <label>Postcode / ZIP</label>
+                                <input type="text" name="postcode"/>
+                                {% if form.postcode.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.postcode.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="billing-info mb-4">
+                                <label>Phone</label>
+                                <input type="text" name="phone"/>
+                                {% if form.phone.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.phone.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-6">
+                            <div class="billing-info mb-4">
+                                <label>Email Address</label>
+                                <input type="text" value="{{user.email}}" name="email" readonly/>
+                                {% if form.email.errors %}
+                                    <ul class="errorlist">
+                                        {% for error in form.email.errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>                     
+                </div>
+            </div>
+            <div class="col-lg-5 mt-md-30px mt-lm-30px ">
+                <div class="your-order-area">
+                    <h3>Your order</h3>
+                    <div class="your-order-wrap gray-bg-4">
+                        <div class="your-order-product-info">
+                            <div class="your-order-top">
+                                <ul>
+                                    <li>Product</li>
+                                    <li>Total</li>
+                                </ul>
+                            </div>
+                            <div class="your-order-middle">
+                                <ul>
+                                    {% load cart_tag %}
+                                    {% for key,value in request.session.cart.items %}
+                                    <li><span class="order-middle-left">{{value.name|truncatewords:4}} X {{value.quantity}}</span> <span
+                                        class="order-price">${{ value.price|multiply:value.quantity }}</span></li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="your-order-bottom">
+                                <ul>
+                                    <li class="your-order-shipping">Shipping</li>
+                                    <li>Free shipping</li>
+                                </ul>
+                            </div>
+                            <div class="your-order-total">
+                                <ul>
+                                    <li class="order-total">Total</li>
+                                    <li><input value="${{cart_total_amount}}" name='amount' readonly></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="payment-method">
+                            <div class="payment-accordion element-mrg">
+                                <div id="faq" class="panel-group">
+                                    <div class="panel panel-default single-my-account m-0">
+                                        <div class="panel-heading my-account-title">
+                                            <h4 class="panel-title"><a data-bs-toggle="collapse" href="#my-account-1" class="collapsed" aria-expanded="true">Direct bank transfer</a>
+                                            </h4>
+                                        </div>
+                                        <div id="my-account-1" class="panel-collapse collapse show" data-bs-parent="#faq">
+                                            <div class="panel-body">
+                                                <p>Please send a check to Store Name, Store Street, Store Town,
+                                                    Store State / County, Store Postcode.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default single-my-account m-0">
+                                        <div class="panel-heading my-account-title">
+                                            <h4 class="panel-title"><a data-bs-toggle="collapse" href="#my-account-2" aria-expanded="false" class="collapsed">Check payments</a></h4>
+                                        </div>
+                                        <div id="my-account-2" class="panel-collapse collapse" data-bs-parent="#faq">
+                                            <div class="panel-body">
+                                                <p>Please send a check to Store Name, Store Street, Store Town,
+                                                    Store State / County, Store Postcode.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default single-my-account m-0">
+                                        <div class="panel-heading my-account-title">
+                                            <h4 class="panel-title"><a data-bs-toggle="collapse" href="#my-account-3">Cash on delivery</a></h4>
+                                        </div>
+                                        <div id="my-account-3" class="panel-collapse collapse" data-bs-parent="#faq">
+                                            <div class="panel-body">
+                                                <p>Please send a check to Store Name, Store Street, Store Town,
+                                                    Store State / County, Store Postcode.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="Place-order mt-25">
+                        <button type="submit" class="text-light">Continue</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+<!-- checkout area end -->
+{% endblock %}
